@@ -34,6 +34,7 @@ from sklearn.metrics import confusion_matrix
 import math
 from sklearn.metrics import classification_report
 from efficientnet_pytorch import EfficientNet
+from model.residual_attention_network import ResidualAttentionModel_92
 
 
 def multi_acc(y_pred, y_test):
@@ -107,8 +108,8 @@ config["optimizer"] = "Adam"  # choices = ["Adam", "SGD"]
 
 config["dice_weight"] = 1 # if config["loss"] = "DiceBCE"
 
-config["batch_size"] = 40 #40, 8
-config["batch_size_val"] = 40
+config["batch_size"] = 16 #40, 8
+config["batch_size_val"] = 16
 #config["validation_batch_size"] = 1
 
 config["crop_size"] = [224, 224]
@@ -179,9 +180,9 @@ from albumentations import (
     Normalize,
     RandomCrop,
     RandomBrightnessContrast,
-RandomGamma,
-CenterCrop
-)
+    RandomGamma,
+    CenterCrop,
+    pytorch)
 
 
 class FocalLoss(nn.Module):
@@ -223,8 +224,10 @@ def main():
 
     args = parse(argparse.ArgumentParser())
 
-    model =  MyResNet() #MVCNN() # MyVGG() # MyResNet()
-    #model = EfficientNet.from_pretrained('efficientnet-b6', num_classes=4)
+    #model =  MyResNet() #MVCNN() # MyVGG() # MyResNet()
+    # model = ResidualAttentionModel_92()
+    # model.fc =  nn.Linear(2048,4)
+    model = EfficientNet.from_pretrained('efficientnet-b4', num_classes=4)
     opt = torch.optim.Adam(model.parameters(), lr=0.00005)
     loss = nn.CrossEntropyLoss()
 
